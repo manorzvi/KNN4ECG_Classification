@@ -1,5 +1,7 @@
 from hw3_utils import *
 import numpy as np
+from sklearn import tree
+
 
 from euclidean_distance import euclidean_distance
 
@@ -79,6 +81,51 @@ class knn_classifier(abstract_classifier):
             return 0
         else:
             return 1
+
+
+class ID3_factory(abstract_classifier_factory):
+    def __init__(self):
+        pass
+
+    def train(self, data, labels):
+        """"
+        train ID3 decision tree classifier
+        :param data: 2D numpy.ndarray of features
+        :param labels: 1D numpy.ndarray of {1,0} labels (ordered as train_features)
+        :return: abstract_classifier object
+        """
+        return ID3_classifier(data, labels)
+
+
+class ID3_classifier(abstract_classifier):
+    def __init__(self, train_features, train_labels):
+        """"
+        construct a ID3 decision tree classifier
+        :parameter
+        :train_features: 2D numpy.ndarray of features
+        :train_labels:   1D numpy.ndarray of {1,0} labels (ordered as train_features)
+        :k:              integer, determine the size of k-nearest-neighbors (subgroup of train_features).
+                         equals 1 as default (1-nearest-neighbor).
+        """
+
+        self._train_features = train_features
+        self._train_labels   = train_labels
+        self._tree = tree.DecisionTreeClassifier()
+        self._tree = self._tree.fit(train_features, train_labels)
+
+    def classify(self, features):
+        """
+        classify a new set of features
+        :param features: 1D numpy.ndarray of features
+        :return: a tagging of the given features (1 or 0)
+        """
+        # features vector needs to be reshaped to 1,-1 shape
+        return self._tree.predict(features.reshape(1, -1))
+
+
+
+
+
 
 
 

@@ -1,4 +1,6 @@
 import numpy as np
+
+
 def euclidean_distance(subjectOne_features, subjectTwo_features):
     """"
     Return the euclidean distance netween subjects
