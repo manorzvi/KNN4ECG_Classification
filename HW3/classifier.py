@@ -1,6 +1,7 @@
 from hw3_utils import *
 import numpy as np
 from sklearn import tree
+from sklearn.linear_model import Perceptron
 
 
 from euclidean_distance import euclidean_distance
@@ -70,7 +71,7 @@ class knn_classifier(abstract_classifier):
 
         # get the majority vote
         count_label_zero = 0
-        count_label_one  = 1
+        count_label_one = 0
         for label in k_minimal_distances_labels:
             if label == 0:
                 count_label_zero += 1
@@ -104,12 +105,10 @@ class ID3_classifier(abstract_classifier):
         :parameter
         :train_features: 2D numpy.ndarray of features
         :train_labels:   1D numpy.ndarray of {1,0} labels (ordered as train_features)
-        :k:              integer, determine the size of k-nearest-neighbors (subgroup of train_features).
-                         equals 1 as default (1-nearest-neighbor).
         """
 
         self._train_features = train_features
-        self._train_labels   = train_labels
+        self._train_labels = train_labels
         self._tree = tree.DecisionTreeClassifier()
         self._tree = self._tree.fit(train_features, train_labels)
 
@@ -124,9 +123,40 @@ class ID3_classifier(abstract_classifier):
 
 
 
+class perceptron(abstract_classifier_factory):
+    def __init__(self):
+        pass
+
+    def train(self, data, labels):
+        """"
+        train perceptron classifier
+        :param data: 2D numpy.ndarray of features
+        :param labels: 1D numpy.ndarray of {1,0} labels (ordered as train_features)
+        :return: abstract_classifier object
+        """
+        return perceptron_classifier(data, labels)
 
 
+class perceptron_classifier(abstract_classifier):
+    def __init__(self, train_features, train_labels):
+        """"
+        construct a perceptron classifier
+        :parameter
+        :train_features: 2D numpy.ndarray of features
+        :train_labels:   1D numpy.ndarray of {1,0} labels (ordered as train_features)
+        """
 
+        self._train_features = train_features
+        self._train_labels = train_labels
+        self._clf = perceptron()
+        self._clf = self._clf.fit(train_features, train_labels)
 
+    def classify(self, features):
+        """
+        classify a new set of features
+        :param features: 1D numpy.ndarray of features
+        :return: a tagging of the given features (1 or 0)
+        """
 
-
+        # features vector needs to be reshaped to 1,-1 shape
+        return self._clf.predict(features.reshape(1, -1))
