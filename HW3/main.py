@@ -4,13 +4,12 @@ import os
 import csv
 import matplotlib.pyplot as plt
 
-from hw3_utils import *
-from euclidean_distance import euclidean_distance
-from split_crosscheck_groups import split_crosscheck_groups
-from split_crosscheck_groups import load_k_fold_data
-from evaluate import evaluate
 
-from classifier import *
+from hw3_utils               import *
+from split_crosscheck_groups import split_crosscheck_groups
+from evaluate                import evaluate
+from classifier              import *
+
 
 def main():
     try:
@@ -30,7 +29,7 @@ def main():
         ampirical_mean = np.mean(train_features, axis=0)
         ampirical_std  = np.std(train_features, axis=0)
 
-        train_features = (train_features - ampirical_mean) / ampirical_std
+        #train_features = (train_features - ampirical_mean) / ampirical_std
         ######################## MANOR 11/1/19 ########################
         # After run the algorithm with and without normalization,     #
         # it seems that the result stay the same.                     #
@@ -83,8 +82,8 @@ def main():
 
 
 
-    ################################################# MANOR 11/1/19 #################################################
-    # It seems that the best accuracy achieved with k=3.                                                            #
+    ################################################# MANOR 19/1/19 #################################################
+    # It seems that the best accuracy achieved with k=1.                                                            #
     # according to the following paper, perhaps better results might achieved using non-euclidean distance measure. #
     # https: // www.ncbi.nlm.nih.gov / pmc / articles / PMC4978658 /                                                #
     #################################################################################################################
@@ -106,7 +105,31 @@ def main():
     plt.legend()
     plt.title('Accuracy and Error as Function of KNN Value and Different Classifiers')
     plt.savefig(os.path.join(os.path.join(os.getcwd(), 'kFold_results', 'experiments12')))
+    #plt.show()
+
+
+    try:
+            perceptefactory = perceptron_factory()
+            accuracy, error = evaluate(perceptefactory, 2)
+    except Exception as e:
+        raise e
+
+    with open(os.path.join(os.getcwd(), 'kFold_results', 'experiments12.csv'), 'a') as exp12:
+        wr = csv.writer(exp12)
+        wr.writerow([1, accuracy, error])
+
+    plt.plot(range(Ks[-1]), [accuracy]*Ks[-1], linestyle='--', marker='o', color='black', label='Accuracy, Perceptron')
+    plt.plot(range(Ks[-1]), [error]*Ks[-1], linestyle='--', marker='o', color='magenta', label='Error, Perceptron')
+    plt.text(Ks[-1], accuracy, '{},{:.3f}'.format(Ks[-1], accuracy))
+    plt.text(Ks[-1], error, '{},{:.3f}'.format(Ks[-1], error))
+    plt.legend()
+    plt.title('Accuracy and Error as Function of KNN Value and Different Classifiers')
+    plt.savefig(os.path.join(os.path.join(os.getcwd(), 'kFold_results', 'experiments12')))
     plt.show()
+
+
+
+
 
 
 

@@ -31,8 +31,8 @@ def k_fold_train_and_test(k):
             else:
                 trainData.append(np.load(filename))
 
-    test_features = testData['name1']
-    test_labels   = testData['name2']
+    test_features  = testData['name1']
+    test_labels    = testData['name2']
 
     train_features = []
     train_labels   = []
@@ -70,14 +70,14 @@ def evaluate(classifier_factory, k):
     for kfold in range(k):
         train_features, train_labels, test_features, test_labels = k_fold_train_and_test(kfold)
 
-        knn_classifier = classifier_factory.train(train_features, train_labels)
-        true_positive_count = 0
-        true_negative_count = 0
+        classifier = classifier_factory.train(train_features, train_labels)
+        true_positive_count  = 0
+        true_negative_count  = 0
         false_positive_count = 0
         false_negative_count = 0
 
         for test_feature, test_label in zip(test_features, test_labels):
-            prediction = knn_classifier.classify(test_feature)
+            prediction = classifier.classify(test_feature)
             if prediction == 1 and test_label == 1: # True Positive
                 true_positive_count += 1
             if prediction == 1 and test_label == 0: # False Positive
@@ -94,7 +94,15 @@ def evaluate(classifier_factory, k):
         # Mn = Mn-1 + (An -Mn-1)/n
         accuracy = accuracy + (current_accuracy - accuracy) / i
         error    = error    + (current_error-error)         / i
-
         i += 1
+
+        #accuracy += current_accuracy
+        #error += current_error
+
+    #accuracy = accuracy/k
+    #error = error/k
+
+
+
     return accuracy, error
 
